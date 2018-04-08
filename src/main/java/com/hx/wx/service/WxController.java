@@ -6,9 +6,10 @@ import com.google.gson.Gson;
 import com.hx.wx.utils.XMLUtils;
 import io.swagger.annotations.Api;
 import org.jdom.JDOMException;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -18,7 +19,7 @@ import java.net.URLEncoder;
 
 import java.util.*;
 
-@RestController
+@Controller
 @RequestMapping("/wx/service/")
 @Api(value = "微信相关控制器", description = "支付 登录 签名", position = 100, protocols = "http")
 public class WxController {
@@ -27,6 +28,7 @@ public class WxController {
 
 
     @RequestMapping(value = "index", method = RequestMethod.GET)
+    @ResponseBody
     public Object index(HttpServletResponse response, HttpServletRequest request, String signature, String timestamp, String nonce, String echostr) {
         return echostr;
     }
@@ -45,6 +47,7 @@ public class WxController {
      * @throws IOException
      */
     @RequestMapping(value = "token", method = {RequestMethod.GET, RequestMethod.POST})
+    @ResponseBody
     public Object token(HttpServletResponse response, HttpServletRequest request, String signature, String timestamp, String nonce, String echostr) throws IOException {
         String xml = HttpUtils.inputStream2String(request.getInputStream());
         try {
@@ -62,7 +65,7 @@ public class WxController {
      * 微信调用该地址 拿到code 然后再获取openId
      */
     @RequestMapping(value = "weixinAutoLoginJump", method = RequestMethod.GET)
-    public void weixinAutoLoginJump(HttpServletRequest request, HttpServletResponse response) {
+    public String weixinAutoLoginJump(HttpServletRequest request, HttpServletResponse response) {
         try {
             Gson gson = new Gson();
             String backUrl = request.getParameter("backUrl");
@@ -93,9 +96,10 @@ public class WxController {
             //判断用户是否已经绑定账号
 
             //response.sendRedirect(/*WxConfig.WX_LOGIN_JUMP_FRONT*/backUrl + "?openId=" + openid + "&loginStatus=false");
-            response.getWriter().write(openid);
+            return "invite";
         } catch (Exception e) {
             e.printStackTrace();
+            return e.getMessage();
         }
     }
 
