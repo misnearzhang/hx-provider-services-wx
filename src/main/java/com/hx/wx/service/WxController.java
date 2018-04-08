@@ -92,10 +92,11 @@ public class WxController {
             request.getSession().setAttribute("accessToken", access_token);
             request.getSession().setAttribute("openId", openid);
 
-            System.out.println("取到 openid" + openid);
+            System.out.println("取到 openid:" + openid);
             //判断用户是否已经绑定账号
 
             //response.sendRedirect(/*WxConfig.WX_LOGIN_JUMP_FRONT*/backUrl + "?openId=" + openid + "&loginStatus=false");
+            request.setAttribute("openId",openid);
             return "invite";
         } catch (Exception e) {
             e.printStackTrace();
@@ -142,5 +143,11 @@ public class WxController {
         url.append("&").append("state=").append(1);
         url.append("wechat_redirect");
         return url.toString();
+    }
+
+    @RequestMapping(value = "test", method = RequestMethod.GET)
+    public String test(HttpServletRequest request){
+        request.setAttribute("openId","123");
+        return "invite";
     }
 }
